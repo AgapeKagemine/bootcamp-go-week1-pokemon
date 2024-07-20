@@ -1,4 +1,4 @@
-package interfaces
+package contract
 
 // import "pokemon/internal/domain"
 
@@ -10,7 +10,7 @@ type GlobalInterface[T any] interface {
 	GetAll[T]
 	GetById[T]
 	Save[T]
-	UpdateById[T]
+	Update[T]
 	DeleteById
 }
 
@@ -26,8 +26,8 @@ type Save[T any] interface {
 	Save(*T) error
 }
 
-type UpdateById[T any] interface {
-	UpdateById(*T) error
+type Update[T any] interface {
+	Update(*T) error
 }
 
 type DeleteById interface {

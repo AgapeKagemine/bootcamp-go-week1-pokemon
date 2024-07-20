@@ -2,60 +2,55 @@ package handler
 
 import (
 	"errors"
+	"pokemon/internal/contract"
 	"pokemon/internal/domain"
-	"pokemon/internal/interfaces"
 	"pokemon/internal/usecase"
 	"pokemon/internal/util"
 )
 
-type PlayerHandlerInterface interface {
-	interfaces.GlobalInterface[domain.Player]
+type PlayerHandler interface {
+	contract.GlobalInterface[domain.Player]
 }
 
-type PlayerHandler struct {
-	playerHandler usecase.PlayerUseCaseInterface
+type PlayerHandlerImpl struct {
+	playerHandler usecase.PlayerUseCase
 }
 
-func NewPlayerHandler(uc usecase.PlayerUseCaseInterface) PlayerHandlerInterface {
-	if handler, ok := uc.(usecase.PlayerUseCase); ok {
-		return PlayerHandler{
-			playerHandler: handler,
-		}
-	}
-	return PlayerHandler{
-		playerHandler: nil,
+func NewPlayerHandler(uc usecase.PlayerUseCase) PlayerHandler {
+	return PlayerHandlerImpl{
+		playerHandler: uc,
 	}
 }
 
-func (uc PlayerHandler) GetAll() (players []domain.Player, err error) {
+func (uc PlayerHandlerImpl) GetAll() (players []domain.Player, err error) {
 	if !util.IsConnected(uc.playerHandler) {
 		return nil, errors.New("player usecase is not initialized")
 	}
 	return uc.playerHandler.GetAll()
 }
 
-func (uc PlayerHandler) GetById(id int) (player domain.Player, err error) {
+func (uc PlayerHandlerImpl) GetById(id int) (player domain.Player, err error) {
 	if !util.IsConnected(uc.playerHandler) {
 		return domain.Player{}, errors.New("player usecase is not initialized")
 	}
 	return uc.playerHandler.GetById(id)
 }
 
-func (uc PlayerHandler) Save(player *domain.Player) (err error) {
+func (uc PlayerHandlerImpl) Save(player *domain.Player) (err error) {
 	if !util.IsConnected(uc.playerHandler) {
 		return errors.New("player usecase is not initialized")
 	}
 	return uc.playerHandler.Save(player)
 }
 
-func (uc PlayerHandler) UpdateById(player *domain.Player) error {
+func (uc PlayerHandlerImpl) Update(player *domain.Player) error {
 	if !util.IsConnected(uc.playerHandler) {
 		return errors.New("player usecase is not initialized")
 	}
-	return uc.playerHandler.UpdateById(player)
+	return uc.playerHandler.Update(player)
 }
 
-func (uc PlayerHandler) DeleteById(id int) error {
+func (uc PlayerHandlerImpl) DeleteById(id int) error {
 	if !util.IsConnected(uc.playerHandler) {
 		return errors.New("player usecase is not initialized")
 	}

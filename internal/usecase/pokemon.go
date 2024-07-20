@@ -2,60 +2,55 @@ package usecase
 
 import (
 	"errors"
+	"pokemon/internal/contract"
 	"pokemon/internal/domain"
-	"pokemon/internal/interfaces"
 	"pokemon/internal/repository"
 	"pokemon/internal/util"
 )
 
-type PokemonUseCaseInterface interface {
-	interfaces.GlobalInterface[domain.Pokemon]
+type PokemonUseCase interface {
+	contract.GlobalInterface[domain.Pokemon]
 }
 
-type PokemonUseCase struct {
-	pokemonRepo repository.PokemonRepositoryInterface
+type PokemonUseCaseImpl struct {
+	pokemonRepo repository.PokemonRepository
 }
 
-func NewPokemonUseCase(repo repository.PokemonRepositoryInterface) PokemonUseCaseInterface {
-	if rp, ok := repo.(repository.PokemonRepository); ok {
-		return PokemonUseCase{
-			pokemonRepo: rp,
-		}
-	}
-	return PokemonUseCase{
-		pokemonRepo: nil,
+func NewPokemonUseCase(repo repository.PokemonRepository) PokemonUseCase {
+	return PokemonUseCaseImpl{
+		pokemonRepo: repo,
 	}
 }
 
-func (uc PokemonUseCase) GetAll() (pokemons []domain.Pokemon, err error) {
+func (uc PokemonUseCaseImpl) GetAll() (pokemons []domain.Pokemon, err error) {
 	if !util.IsConnected(uc.pokemonRepo) {
 		return nil, errors.New("pokemon repository is not initialized")
 	}
 	return uc.pokemonRepo.GetAll()
 }
 
-func (uc PokemonUseCase) GetById(id int) (pokemon domain.Pokemon, err error) {
+func (uc PokemonUseCaseImpl) GetById(id int) (pokemon domain.Pokemon, err error) {
 	if !util.IsConnected(uc.pokemonRepo) {
 		return domain.Pokemon{}, errors.New("pokemon repository is not initialized")
 	}
 	return uc.pokemonRepo.GetById(id)
 }
 
-func (uc PokemonUseCase) Save(pokemon *domain.Pokemon) (err error) {
+func (uc PokemonUseCaseImpl) Save(pokemon *domain.Pokemon) (err error) {
 	if !util.IsConnected(uc.pokemonRepo) {
 		return errors.New("pokemon repository is not initialized")
 	}
 	return uc.pokemonRepo.Save(pokemon)
 }
 
-func (uc PokemonUseCase) UpdateById(pokemon *domain.Pokemon) error {
+func (uc PokemonUseCaseImpl) Update(pokemon *domain.Pokemon) error {
 	if !util.IsConnected(uc.pokemonRepo) {
 		return errors.New("pokemon repository is not initialized")
 	}
-	return uc.pokemonRepo.UpdateById(pokemon)
+	return uc.pokemonRepo.Update(pokemon)
 }
 
-func (uc PokemonUseCase) DeleteById(id int) error {
+func (uc PokemonUseCaseImpl) DeleteById(id int) error {
 	if !util.IsConnected(uc.pokemonRepo) {
 		return errors.New("pokemon repository is not initialized")
 	}
