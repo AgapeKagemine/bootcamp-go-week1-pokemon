@@ -5,10 +5,11 @@ import (
 	"fmt"
 	"pokemon/internal/domain"
 	"pokemon/internal/interfaces"
+	"pokemon/internal/util"
 )
 
 type PlayerRepositoryInterface interface {
-	interfaces.InterfaceRepository[domain.Player]
+	interfaces.GlobalInterface[domain.Player]
 }
 
 type PlayerRepository struct {
@@ -22,8 +23,8 @@ func NewPlayerRepository() PlayerRepositoryInterface {
 }
 
 func (repo PlayerRepository) GetAll() (players []domain.Player, err error) {
-	if len(repo.db) < 1 {
-		return nil, errors.New("no Players found")
+	if util.IsEmpty(repo.db) {
+		return nil, errors.New("no player found")
 	}
 	for _, Player := range repo.db {
 		players = append(players, Player)
@@ -32,14 +33,14 @@ func (repo PlayerRepository) GetAll() (players []domain.Player, err error) {
 }
 
 func (repo PlayerRepository) GetById(id int) (player domain.Player, err error) {
-	if _, exists := repo.db[player.ID]; !exists {
+	if !util.IsExist(repo.db, id) {
 		return domain.Player{}, errors.New("player not found")
 	}
 	return repo.db[player.ID], err
 }
 
 func (repo PlayerRepository) Save(player *domain.Player) (err error) {
-	if _, exists := repo.db[player.ID]; exists {
+	if util.IsExist(repo.db, player.ID) {
 		return errors.New("player already exists")
 	}
 	repo.db[player.ID] = *player
@@ -48,18 +49,19 @@ func (repo PlayerRepository) Save(player *domain.Player) (err error) {
 }
 
 func (repo PlayerRepository) UpdateById(player *domain.Player) (err error) {
-	if _, exists := repo.db[player.ID]; !exists {
+	if !util.IsExist(repo.db, player.ID) {
 		return errors.New("player not found")
 	}
 	repo.db[player.ID] = *player
-	fmt.Println("Player updated successfully")
+	fmt.Println("player updated successfully")
 	return err
 }
 
 func (repo PlayerRepository) DeleteById(id int) (err error) {
-	if _, exists := repo.db[id]; !exists {
+	if !util.IsExist(repo.db, id) {
 		return errors.New("player not found")
 	}
 	delete(repo.db, id)
+	fmt.Println("player deleted successfully")
 	return err
 }

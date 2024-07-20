@@ -4,7 +4,7 @@ type Pokemon struct {
 	ID             int
 	Name           string
 	Type           string
-	CatchRate      int
+	CatchRate      float64
 	IsRare         bool
 	RegisteredDate string
 }

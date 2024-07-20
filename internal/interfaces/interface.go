@@ -6,7 +6,7 @@ package interfaces
 // 	domain.Player | domain.Pokemon
 // }
 
-type InterfaceRepository[T any] interface {
+type GlobalInterface[T any] interface {
 	GetAll[T]
 	GetById[T]
 	Save[T]

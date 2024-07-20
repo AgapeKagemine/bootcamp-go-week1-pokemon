@@ -7,16 +7,21 @@ import (
 )
 
 type PokemonHandlerInterface interface {
-	interfaces.InterfaceRepository[domain.Pokemon]
+	interfaces.GlobalInterface[domain.Pokemon]
 }
 
 type PokemonHandler struct {
 	pokemonHandler usecase.PokemonUseCaseInterface
 }
 
-func NewPokemonHandler(usecase usecase.PokemonUseCaseInterface) PokemonHandlerInterface {
+func NewPokemonHandler(uc usecase.PokemonUseCaseInterface) PokemonHandlerInterface {
+	if handler, ok := uc.(usecase.PokemonUseCase); ok {
+		return PokemonHandler{
+			pokemonHandler: handler,
+		}
+	}
 	return PokemonHandler{
-		pokemonHandler: usecase,
+		pokemonHandler: nil,
 	}
 }
 
