@@ -30,11 +30,11 @@ func autowired() (handler.PlayerHandler, handler.PokemonHandler) {
 
 func fillPokemons(hPokemons handler.PokemonHandler) {
 	pokemons := []domain.Pokemon{
-		{Name: "Pikachu", Type: "Electric", CatchRate: 0.7, IsRare: false, RegisteredDate: time.Now().Local().Format(time.DateOnly)},
-		{Name: "Charmander", Type: "Fire", CatchRate: 0.4, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -1, 0).Format(time.DateOnly)},
-		{Name: "Bulbasaur", Type: "Grass/Poison", CatchRate: 0.1, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -6, 0).Format(time.DateOnly)},
-		{Name: "Dragonite", Type: "Dragon/Flying", CatchRate: 0.3, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -8, 0).Format(time.DateOnly)},
-		{Name: "Mew", Type: "Psychic", CatchRate: 0.01, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -10, 0).Format(time.DateOnly)},
+		{Name: "Pikachu", Type: "Electric", CatchRate: 70, IsRare: false, RegisteredDate: time.Now().Local().Format(time.DateOnly)},
+		{Name: "Charmander", Type: "Fire", CatchRate: 40, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -1, 0).Format(time.DateOnly)},
+		{Name: "Bulbasaur", Type: "Grass/Poison", CatchRate: 10, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -6, 0).Format(time.DateOnly)},
+		{Name: "Dragonite", Type: "Dragon/Flying", CatchRate: 30, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -8, 0).Format(time.DateOnly)},
+		{Name: "Mew", Type: "Psychic", CatchRate: 1, IsRare: true, RegisteredDate: time.Now().Local().AddDate(0, -10, 0).Format(time.DateOnly)},
 	}
 	for _, v := range pokemons {
 		hPokemons.Save(&v)
@@ -63,7 +63,7 @@ func pokeGo(player domain.Player, players handler.PlayerHandler, pokemons handle
 			break
 		}
 		for _, pokemon := range pokeList {
-			fmt.Printf("%d - called: %s with type: %s with chance: %d%%\n", pokemon.ID, pokemon.Name, pokemon.Type, int(pokemon.CatchRate*100))
+			fmt.Printf("%d - called: %s with type: %s with chance: %d%%\n", pokemon.ID, pokemon.Name, pokemon.Type, pokemon.CatchRate)
 		}
 		exit := len(pokeList) + 1
 		fmt.Printf("%d to exit\n", exit)
@@ -85,15 +85,15 @@ func pokeGo(player domain.Player, players handler.PlayerHandler, pokemons handle
 			continue
 		}
 		r := rand.New(rand.NewSource(time.Now().UnixNano()))
-		prob := r.Float64()
-		if prob < poke.CatchRate {
+		prob := r.Intn(100) + 1
+		if prob > poke.CatchRate {
 			util.ConsoleClear()
-			fmt.Printf("you failed to catch "+poke.Name+" with %d%% chance - you rolled: %d\npress enter to continue\n", int(poke.CatchRate*100), int(prob*100))
+			fmt.Printf("you failed to catch "+poke.Name+" with %d%% chance - you rolled: %d\npress enter to continue\n", poke.CatchRate, prob)
 			fmt.Scanln(&trash)
 			continue
 		}
 		util.ConsoleClear()
-		fmt.Printf("you catched "+poke.Name+" with %d%% chance - you rolled: %d\npress enter to continue\n", int(poke.CatchRate*100), int(prob*100))
+		fmt.Printf("you catched "+poke.Name+" with %d%% chance - you rolled: %d\npress enter to continue\n", poke.CatchRate, prob)
 		fmt.Scanln(&trash)
 		player.Bag = append(player.Bag, poke)
 		players.Update(&player)
