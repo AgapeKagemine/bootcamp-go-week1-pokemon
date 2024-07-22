@@ -41,7 +41,7 @@ func fillPokemons(hPokemons handler.PokemonHandler) {
 	}
 }
 
-func pokeGo(player domain.Player, players handler.PlayerHandler, pokemons handler.PokemonHandler, scanner *bufio.Scanner) {
+func pokeGo(player *domain.Player, players handler.PlayerHandler, pokemons handler.PokemonHandler, scanner *bufio.Scanner) {
 	for {
 		util.ConsoleClear()
 		fmt.Println("welcome to Poke Go, ", player.Name)
@@ -96,7 +96,7 @@ func pokeGo(player domain.Player, players handler.PlayerHandler, pokemons handle
 		fmt.Printf("you catched "+poke.Name+" with %d%% chance - you rolled: %d\npress enter to continue\n", poke.CatchRate, prob)
 		fmt.Scanln(&trash)
 		player.Bag = append(player.Bag, poke)
-		players.Update(&player)
+		players.Update(player)
 	}
 }
 
@@ -123,6 +123,7 @@ func gameLoop(players handler.PlayerHandler, pokemons handler.PokemonHandler, sc
 		fmt.Println("1. Login")
 		fmt.Println("2. Exit")
 		fmt.Println()
+		fmt.Print("input: ")
 		menu := util.InputInt(scanner, "Menu")
 		if menu == -1 {
 			continue
@@ -136,8 +137,17 @@ func gameLoop(players handler.PlayerHandler, pokemons handler.PokemonHandler, sc
 		switch menu {
 		case 1:
 			player := login(scanner)
-			players.Save(&player)
-			pokeGo(player, players, pokemons, scanner)
+			playerList, _ := players.GetAll()
+			for _, p := range playerList {
+				if p.Name == player.Name {
+					player = p
+					break
+				}
+			}
+			if player.ID == 0 {
+				players.Save(&player)
+			}
+			pokeGo(&player, players, pokemons, scanner)
 		case 2:
 			util.ConsoleClear()
 			fmt.Println("thanks for playing")
